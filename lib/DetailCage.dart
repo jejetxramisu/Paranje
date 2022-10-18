@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Detailcage extends StatefulWidget {
   String? namaKandang, hari, populasi, ayamDead, bobot;
@@ -18,6 +20,7 @@ class Detailcage extends StatefulWidget {
 }
 
 class _DetailcageState extends State<Detailcage> {
+  PanelController popupDropDown = new PanelController();
   bool isSelected = false;
   final listChoices = <ItemChoice>[
     ItemChoice(1, 'Hari 10'),
@@ -38,21 +41,25 @@ class _DetailcageState extends State<Detailcage> {
         backgroundColor: Color.fromRGBO(2, 82, 49, 1),
         title: Text('Detail Kandang'),
       ),
-      body: Column(
-        children: [
-          buildCage(),
-          Padding(
-            padding: const EdgeInsets.only(top: 30),
-            child: Divider(
-              thickness: 7,
+      body: Stack(children: [
+        Column(
+          children: [
+            buildCage(),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: Divider(
+                thickness: 7,
+              ),
             ),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          buildChipsDay(),
-        ],
-      ),
+            SizedBox(
+              height: 15,
+            ),
+            buildChipsDay(),
+            buildOtherActivity(),
+          ],
+        ),
+        buildPanelDropdown()
+      ]),
     );
   }
 
@@ -278,6 +285,143 @@ class _DetailcageState extends State<Detailcage> {
         ],
       ),
     );
+  }
+
+  Widget buildOtherActivity() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            popupDropDown.open();
+          });
+        },
+        child: Container(
+            padding: EdgeInsets.fromLTRB(10, 15, 10, 15),
+            decoration: BoxDecoration(
+                border: Border.all(color: Color.fromRGBO(194, 214, 206, 1)),
+                borderRadius: BorderRadius.circular(16)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  'Kegiatan Lainnya',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'Lihat Semua',
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color.fromRGBO(4, 149, 89, 1)),
+                )
+              ],
+            )),
+      ),
+    );
+  }
+
+  Widget buildPanelDropdown() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        // height: MediaQuery.of(context).size.height,
+        child: SlidingUpPanel(
+          padding: EdgeInsets.only(top: 20, right: 30, left: 30, bottom: 10),
+          backdropEnabled: true,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+          minHeight: 0,
+          maxHeight: 600,
+          controller: popupDropDown,
+          panelBuilder: (controller) =>
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Text(
+                "Kegiatan Lainnya",
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black),
+              ),
+              Spacer(),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    popupDropDown.close();
+                  });
+                },
+                icon: Icon(Icons.close),
+                color: Color.fromRGBO(2, 82, 49, 1),
+                iconSize: 30,
+              )
+            ]),
+            SizedBox(
+              height: 10,
+            ),
+            Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('• '),
+                    Expanded(
+                        child: Column(
+                      children: [
+                        Text(
+                          'Sampling bobot ayam sebanyak 80 ekor ',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Text(
+                              'Timbang 10 ekor per timbangan pada seluruh bagian kandang. Penimbangan dilakukan pada sore hari sebelum pemberian pakan',
+                              // textAlign: TextAlign.justify,
+                              style: TextStyle(
+                                  // wordSpacing: 2,
+                                  fontSize: 16,
+                                  height: 1.2,
+                                  fontWeight: FontWeight.w400)),
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  thickness: 2,
+                  color: Color.fromRGBO(224, 235, 230, 1),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('•'),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          'Pemberian Medikasi',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w700),
+                        )
+                      ],
+                    )
+                  ],
+                )
+              ],
+            )
+          ]),
+        ));
   }
 }
 
